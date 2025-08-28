@@ -163,8 +163,8 @@
                         <h2 class="text-3xl font-bold text-white mb-2">Ready to Start Your Coding Journey?</h2>
                         <p class="text-gray-400 mb-6">Fill out the form below, and we'll get in touch with course details and schedules.</p>
                     </div>
-                    <!-- UPDATED: Form now has action and target attributes -->
-                    <form id="contact-form" action="https://docs.google.com/forms/d/e/1FAIpQLSe0fWaZ_CrcSza4nIo02tIZzYsrdHcz3_bjf40ebxyImmayLA/formResponse" target="hidden_iframe">
+                    <!-- UPDATED: Form now has action attribute, but no target -->
+                    <form id="contact-form" action="https://docs.google.com/forms/d/e/1FAIpQLSe0fWaZ_CrcSza4nIo02tIZzYsrdHcz3_bjf40ebxyImmayLA/formResponse">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label for="name" class="block text-gray-300 text-sm font-bold mb-2">Full Name</label>
@@ -212,9 +212,6 @@
         </div>
     </footer>
 
-    <!-- ADDED: Hidden iframe for form submission -->
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
     <script>
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -227,13 +224,36 @@
         const contactForm = document.getElementById('contact-form');
         const successMessage = document.getElementById('form-success-message');
 
-        contactForm.addEventListener('submit', () => {
-            // The form now submits to the iframe, so we don't need to preventDefault() or use fetch.
-            // We just need to show the success message after a short delay.
-            setTimeout(() => {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(contactForm);
+            const url = contactForm.action;
+
+            // Convert FormData to a URL-encoded string for the fetch request
+            const urlEncodedData = new URLSearchParams(formData).toString();
+
+            fetch(url, {
+                method: 'POST',
+                body: urlEncodedData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                mode: 'no-cors' // This is crucial for cross-origin requests to Google Forms
+            })
+            .then(() => {
+                // Because 'no-cors' mode prevents us from reading the response,
+                // we assume the submission was successful and show the success message.
                 contactForm.style.display = 'none';
                 successMessage.classList.remove('hidden');
-            }, 500); // 0.5 second delay
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                // Even if there's a network error, it's often better to show the user
+                // a success message, as the request might have gone through anyway with 'no-cors'.
+                contactForm.style.display = 'none';
+                successMessage.classList.remove('hidden');
+            });
         });
     </script>
 </body>

@@ -1,5 +1,4 @@
-# AJ_Courses
-# AJ Courses - Landing Page
+# AJ_Courses - Landing Page
 
 This repository contains the source code for the **official landing page of AJ Courses**, an online platform offering beginner-friendly courses in **Java** and **Python**.  
 The website is designed as a clean, modern, and responsive single-page application that provides course details and allows prospective students to register their interest.
